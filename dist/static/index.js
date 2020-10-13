@@ -74678,6 +74678,118 @@ module.exports = g;
 
 /***/ }),
 
+/***/ "./src/components/dataprovidar.tsx":
+/*!*****************************************!*\
+  !*** ./src/components/dataprovidar.tsx ***!
+  \*****************************************/
+/*! exports provided: DataProvider */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "DataProvider", function() { return DataProvider; });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var reactstrap__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! reactstrap */ "./node_modules/reactstrap/es/index.js");
+/* harmony import */ var _line_chart__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./line_chart */ "./src/components/line_chart.tsx");
+var __extends = (undefined && undefined.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+
+
+//timeglobal is a global variable.
+//i create a object where time is a value which i want to increase gradually.
+//so for this,instead of creating a function i make it global
+var timeglobal = 4;
+var DataProvider = /** @class */ (function (_super) {
+    __extends(DataProvider, _super);
+    function DataProvider(props) {
+        var _this = _super.call(this, props) || this;
+        _this.state = { data: _this.props.propsdata };
+        _this.opacityChange = _this.opacityChange.bind(_this);
+        return _this;
+    }
+    //The objective of creating this function is to change the opacity attribute.
+    //Every line has it's initial opacity 0.
+    //This function make the opacity 0 to 1. or 1 to 0.
+    DataProvider.prototype.opacityChange = function (id) {
+        var pathid = document.getElementById(id);
+        if (pathid.getAttribute("opacity") === "0") {
+            pathid.setAttribute("opacity", "1");
+        }
+        else {
+            pathid.setAttribute("opacity", "0");
+        }
+    };
+    //objectGenerator create three object at a time
+    // and push it in the main data set by calling dataUpdater.
+    DataProvider.prototype.objectGenerator = function (context) {
+        var keyarr = ["HZ", "VOLT", "AMP"];
+        var time = timeglobal++;
+        //getRandomArbitrary function generate a number between two given number
+        function getRandomArbitrary(min, max) {
+            return Math.floor(Math.random() * (max - min) + min);
+        }
+        var obj1 = { "time": time, "value": getRandomArbitrary(10, 20) };
+        console.log(obj1);
+        context.dataUpdater(keyarr[0], obj1);
+        var obj2 = { "time": time, "value": getRandomArbitrary(50, 60) };
+        console.log(obj2);
+        context.dataUpdater(keyarr[1], obj2);
+        var obj3 = { "time": time, "value": getRandomArbitrary(80, 90) };
+        console.log(obj3);
+        context.dataUpdater(keyarr[2], obj3);
+    };
+    //dataUpdater function update the main data by pushing the object.
+    DataProvider.prototype.dataUpdater = function (name, obj) {
+        if (this.state.data[name].value.length >= 20) {
+            console.log("i am in");
+            this.state.data[name].value.reverse();
+            this.state.data[name].value.pop();
+            this.state.data[name].value.reverse();
+            this.state.data[name].value.push(obj);
+            console.log(this.state.data[name].value);
+            this.setState(this.state.data[name].value);
+        }
+        else {
+            this.state.data[name].value.push(obj);
+        }
+    };
+    //i want to call objectGenerator function after every 1000ms after the first render
+    //beacuse of continuouslly updating the main data 
+    //and also send the "this" because after calling componentDidMount this function "this" is
+    //not work.That's why i send the "this" as argument.
+    DataProvider.prototype.componentDidMount = function () {
+        setInterval(this.objectGenerator, 1000, this);
+    };
+    DataProvider.prototype.render = function () {
+        var _this = this;
+        return (react__WEBPACK_IMPORTED_MODULE_0__["createElement"]("div", { id: "linecontainer" },
+            react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_line_chart__WEBPACK_IMPORTED_MODULE_2__["Line_chart"], { timeSeriseData: this.state.data }),
+            react__WEBPACK_IMPORTED_MODULE_0__["createElement"](reactstrap__WEBPACK_IMPORTED_MODULE_1__["Row"], { id: "checkbox", className: "ml-3" }, 
+            // 
+            Object.keys(this.props.propsdata).map(function (key) { return (react__WEBPACK_IMPORTED_MODULE_0__["createElement"](reactstrap__WEBPACK_IMPORTED_MODULE_1__["Label"], { key: key.toString(), className: "ml-5" },
+                react__WEBPACK_IMPORTED_MODULE_0__["createElement"](reactstrap__WEBPACK_IMPORTED_MODULE_1__["Input"], { type: "checkbox", onChange: _this.opacityChange.bind(_this, key) }),
+                key)); }))));
+    };
+    return DataProvider;
+}(react__WEBPACK_IMPORTED_MODULE_0__["Component"]));
+
+
+
+/***/ }),
+
 /***/ "./src/components/line_chart.tsx":
 /*!***************************************!*\
   !*** ./src/components/line_chart.tsx ***!
@@ -74698,12 +74810,18 @@ __webpack_require__.r(__webpack_exports__);
 var Line_chart = function (_a) {
     var timeSeriseData = _a.timeSeriseData;
     var _b = react__WEBPACK_IMPORTED_MODULE_0__["useState"](timeSeriseData), data = _b[0], setData = _b[1];
+    console.log(timeSeriseData);
     var svgRef = react__WEBPACK_IMPORTED_MODULE_0__["useRef"]();
     var svgcontainer = react__WEBPACK_IMPORTED_MODULE_0__["useRef"]();
     react__WEBPACK_IMPORTED_MODULE_0__["useEffect"](function () {
+        //here i select svg element 
         var svg = Object(d3__WEBPACK_IMPORTED_MODULE_1__["select"])(svgRef.current);
-        var xScale = Object(d3__WEBPACK_IMPORTED_MODULE_1__["scaleLinear"])().domain([1, 100]).range([0, 400]);
+        //defining the x scale where domain's first value is "HZ" array's first time value and
+        //second value is "HZ" array's last value. 
+        var xScale = Object(d3__WEBPACK_IMPORTED_MODULE_1__["scaleLinear"])().domain([data["HZ"].value[0].time, data["HZ"].value[data["HZ"].value.length - 1].time]).range([0, 400]);
+        //defining the y scale.
         var yScale = Object(d3__WEBPACK_IMPORTED_MODULE_1__["scaleLinear"])().domain([1, 100]).range([250, 0]);
+        //
         var yAxis = Object(d3__WEBPACK_IMPORTED_MODULE_1__["axisLeft"])(yScale);
         svg.select(".y-axis")
             .attr("transform", "translate(30,10)")
@@ -74712,59 +74830,32 @@ var Line_chart = function (_a) {
         svg.select(".x-axis")
             .attr("transform", "translate(30,260)")
             .call(xAxis);
+        var color = Object(d3__WEBPACK_IMPORTED_MODULE_1__["scaleOrdinal"])(d3__WEBPACK_IMPORTED_MODULE_1__["schemeCategory10"]);
+        //create a line generator function using d3 line() function which takes 
+        // x co-ordinate value and y co-ordinate value.
         var myLine = Object(d3__WEBPACK_IMPORTED_MODULE_1__["line"])().x(function (d) { return xScale(d.time); })
             .y(function (d) { return yScale(d.value); })
             .curve(d3__WEBPACK_IMPORTED_MODULE_1__["curveCardinal"]);
-        timeSeriseData.forEach(function (element) {
-            console.log(element.key);
-            createChecbox(element.key);
-            svg.append('path')
-                .attr('d', myLine(element.value))
-                .attr('stroke', 'blue')
+        //gererating line depending on the key name and set some attribute 
+        Object.keys(data).forEach(function (key) {
+            svg.selectAll("." + data[key].name)
+                .data(data[key].value)
+                .attr('d', myLine(data[key].value))
+                .attr('stroke', color(data[key].name))
                 .attr('stroke-width', 2)
-                .attr("id", element.key)
+                .attr("id", data[key].name)
                 .attr("transform", "translate(30,10)")
-                .attr("opacity", "0")
                 .attr('fill', 'none');
         });
     });
-    function opacityChange(id) {
-        var pathid = document.getElementById(id);
-        if (pathid.getAttribute("opacity") === "0") {
-            pathid.setAttribute("opacity", "1");
-        }
-        else {
-            pathid.setAttribute("opacity", "0");
-        }
-    }
-    function createChecbox(id) {
-        var div = document.getElementById("checkbox");
-        var checkbox = document.createElement('input');
-        checkbox.type = 'checkbox';
-        checkbox.id = id;
-        checkbox.className = 'pl-3';
-        checkbox.onchange = function () {
-            var lineid = document.getElementById(id);
-            if (lineid.getAttribute("opacity") === "0") {
-                lineid.setAttribute("opacity", "1");
-            }
-            else {
-                lineid.setAttribute("opacity", "0");
-            }
-        };
-        var label = document.createElement('label');
-        label.className = 'pl-2';
-        label.innerHTML = id;
-        /// var br = document.createElement('br');
-        div.appendChild(checkbox);
-        div.appendChild(label);
-        /// div.appendChild(br);
-    }
     return (react__WEBPACK_IMPORTED_MODULE_0__["createElement"](react__WEBPACK_IMPORTED_MODULE_0__["Fragment"], null,
         react__WEBPACK_IMPORTED_MODULE_0__["createElement"]("div", { id: "svgcontainer", className: "ml-3", ref: svgcontainer },
             react__WEBPACK_IMPORTED_MODULE_0__["createElement"]("svg", { id: "linechart", ref: svgRef, overflow: "visible", height: "300", width: "400", fill: "red", stroke: "dark" },
                 react__WEBPACK_IMPORTED_MODULE_0__["createElement"]("g", { className: "y-axis" }),
-                react__WEBPACK_IMPORTED_MODULE_0__["createElement"]("g", { className: "x-axis" })),
+                react__WEBPACK_IMPORTED_MODULE_0__["createElement"]("g", { className: "x-axis" }),
+                react__WEBPACK_IMPORTED_MODULE_0__["createElement"]("path", { className: "HZ", opacity: "0" }),
+                react__WEBPACK_IMPORTED_MODULE_0__["createElement"]("path", { className: "VOLT", opacity: "0" }),
+                react__WEBPACK_IMPORTED_MODULE_0__["createElement"]("path", { className: "AMP", opacity: "0" })),
             react__WEBPACK_IMPORTED_MODULE_0__["createElement"](reactstrap__WEBPACK_IMPORTED_MODULE_2__["Row"], { id: "checkbox", className: "ml-3" }))));
 };
 
@@ -74784,35 +74875,39 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var react_dom__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-dom */ "./node_modules/react-dom/index.js");
 /* harmony import */ var react_dom__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react_dom__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _components_line_chart__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./components/line_chart */ "./src/components/line_chart.tsx");
+/* harmony import */ var _components_dataprovidar__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./components/dataprovidar */ "./src/components/dataprovidar.tsx");
 
 
 
-var data = [{
-        "key": "hz",
+//Main data which is representing in the graph.
+var data = {
+    "HZ": {
+        "name": "HZ",
         "value": [
-            { "time": 12, "value": 10 },
-            { "time": 13, "value": 20 },
-            { "time": 14, "value": 30 },
-            { "time": 15, "value": 40 },
-            { "time": 16, "value": 50 }
+            { "time": 1, "value": 10 },
+            { "time": 2, "value": 14 },
+            { "time": 3, "value": 17 },
+            { "time": 4, "value": 19 }
         ]
-    }, {
-        "key": "hzz",
-        "value": [{ "time": 1, "value": 10 },
-            { "time": 2, "value": 22 },
-            { "time": 3, "value": 24 },
-            { "time": 4, "value": 27 },
-            { "time": 5, "value": 38 }]
-    }, {
-        "key": "amp",
-        "value": [{ "time": 1, "value": 14 },
-            { "time": 3, "value": 19 },
-            { "time": 4, "value": 21 },
-            { "time": 6, "value": 19 },
-            { "time": 10, "value": 26 }]
-    }];
-react_dom__WEBPACK_IMPORTED_MODULE_1__["render"](react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_components_line_chart__WEBPACK_IMPORTED_MODULE_2__["Line_chart"], { timeSeriseData: data }), document.getElementById("container"));
+    },
+    "VOLT": {
+        "name": "VOLT",
+        "value": [
+            { "time": 1, "value": 50 },
+            { "time": 2, "value": 54 },
+            { "time": 3, "value": 57 },
+            { "time": 4, "value": 53 }
+        ]
+    },
+    "AMP": {
+        "name": "AMP",
+        "value": [{ "time": 1, "value": 80 },
+            { "time": 2, "value": 89 },
+            { "time": 3, "value": 81 },
+            { "time": 4, "value": 85 }]
+    }
+};
+react_dom__WEBPACK_IMPORTED_MODULE_1__["render"](react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_components_dataprovidar__WEBPACK_IMPORTED_MODULE_2__["DataProvider"], { propsdata: data }), document.getElementById("container"));
 
 
 /***/ })
